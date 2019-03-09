@@ -1,0 +1,26 @@
+{
+  "name": "TvShowAppBackend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "keywords": [],
+  "author": "Crystal R. Williams",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "body-parser": "^1.18.3",
+    "cookie-parser": "^1.4.4",
+    "dotenv": "^6.2.0",
+    "express": "^4.16.4",
+    "firebase": "^5.8.2",
+    "jsonwebtoken": "^8.4.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.14.1",
+    "eslint-config-google": "^0.12.0"
+  }
+}
