@@ -44,8 +44,8 @@ const config = {
   storageBucket: process.env.storageBucket
 };
 
-const firebaseConf = firebase.initializeApp(config);
-console.log('firebaseConf ', firebaseConf);
+/* const firebaseConf = */firebase.initializeApp(config);
+// console.log('firebaseConf ', firebaseConf);
 
 // import routes
 const routes = require('./app');

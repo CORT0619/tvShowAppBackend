@@ -25,12 +25,9 @@ router.post('/api/firebase/login', (req, res, err) => {
 
   firebase.auth().signInWithEmailAndPassword(email, password)
       .then(() => {
-      // console.log('do something ', result);
-        return tvShowLogin(res, cookies)
+        return tvShowLogin()
             .then((results) => {
               console.log('results ', results);
-              // res = results;
-              // res.status(200).send('set cookie');
               res.cookie('token', results, {
                 maxAge: 86400000,
                 expires: new Date(Date.now() + 86400000),
@@ -38,18 +35,14 @@ router.post('/api/firebase/login', (req, res, err) => {
                 httpOnly: true
               });
 
-              // res.status(200).send('set successfully');
-              res.status(200).json({ msg: 'set successfully' });
+              res.status(200).send('set successfully');
             })
             .catch(() => {
-              // res.status(500).send('Unable to process your request');
-              res.status(500).json({
-                error: 'Unable to process your request.'
-              });
+              res.status(500).send('Unable to process your request');
             });
       })
       .catch((err) => {
-        console.log('error ', err);
+        res.status(400).send(err);
       });
 });
 
@@ -109,10 +102,11 @@ router.post('/api/shows', (req, res, err) => {
  * @param {*} cookies
  * @return { promise} with the response or error
  */
-function tvShowLogin(res, cookies) {
+function tvShowLogin() {
   return new Promise((resolve, reject) => {
     const auth = {
-      apikey: process.env.showApiKey,
+      // apikey: process.env.showApiKey,
+      apikey: 'kj3923jiejfwj093j4',
       username: process.env.user,
       userkey: process.env.uniqueId
     };
