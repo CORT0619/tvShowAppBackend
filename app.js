@@ -1,5 +1,4 @@
 const express = require('express');
-// const app = express();
 const router = express.Router();
 const firebase = require('firebase');
 const axios = require('axios');
@@ -13,7 +12,6 @@ const axios = require('axios');
 router.post('/api/firebase/login', (req, res, err) => {
   const { cookies } = req;
   const { email, password } = req.body;
-
   // firebase.auth().getRedirectResult().then((result) => {
   //    if (result.credential) {
   //      const token = result.credential.accessToken;
@@ -24,22 +22,25 @@ router.post('/api/firebase/login', (req, res, err) => {
   // });
 
   firebase.auth().signInWithEmailAndPassword(email, password)
-      .then(() => {
-        return tvShowLogin()
-            .then((results) => {
-              console.log('results ', results);
-              res.cookie('token', results, {
-                maxAge: 86400000,
-                expires: new Date(Date.now() + 86400000),
-                secure: false,
-                httpOnly: true
-              });
-
-              res.status(200).send('set successfully');
-            })
-            .catch(() => {
-              res.status(500).send('Unable to process your request');
+      .then(async () => {
+        // eslint-disable-next-line
+        if (!cookies.token) { // TODO: Implement logic to check if token is also expired
+          try {
+            const results = await tvShowLogin();
+            res.cookie('token', results, {
+              maxAge: 86400000,
+              expires: new Date(Date.now() + 86400000),
+              secure: false,
+              httpOnly: true
             });
+            // res.status(200).send('set successfully');
+            res.status(200);
+          } catch (e) {
+            // res.status(500).send('Unable to process your request');
+            res.status(500).json({'msg': 'Unable to process your request'});
+          }
+        }
+        res.status(200).json({ 'msg': 'Login successful!' });
       })
       .catch((err) => {
         res.status(400).send(err);
@@ -47,54 +48,25 @@ router.post('/api/firebase/login', (req, res, err) => {
 });
 
 // tvshow api
-// router.post('/api/show/login', (req, res, err) => {
-//   const { cookies } = req;
-//   const auth = {
-//     apikey: process.env.showApiKey,
-//     username: process.env.user,
-//     userkey: process.env.uniqueId
-//   };
+router.get('/api/show/overview/:show', (req, res, err) => {
+  const { show } = req.params;
+  const { token } = req.cookies;
 
-//   console.log('cookies ', req.cookies);
-
-//    axios.post('https://api.thetvdb.com/login', auth).then((response) => {
-//      console.log('response ', response);
-
-//      // set cookie
-//     /*const date = new Date();
-//     date.setHours(date.getHours() + 24);*/
-
-// eslint-disable-next-line
-//     res.cookie('token', response.data.token, { maxAge: 86400000, expires: new Date(Date.now() + 86400000), httpOnly: true });
-//     res.status(200).send('set cookie');
-//    })
-//    .catch(err => {
-//     console.log('error ', err);
-//    });
-// });
-
-
-router.get('/api/show/overview', (req, res, err) => {
-  const token = '';
-  const show = req.body.tvshow;
   const headers = {
-    Authorization: `Bearer ${data.token}`
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
   };
-  axios.get(`https://api.thetvdb.com/search/series?name=${show}`, headers)
-      .then((res) => {
-        console.log('res ', res);
+  const url = `https://api.thetvdb.com/search/series?name=${show}`;
+  axios.get(url, headers)
+      .then((response) => {
+        console.log('response.data ', response);
+        res.status(response.status).send(response.data.data);
       })
       .catch((err) => {
         console.log('error ', err);
       });
 });
-
-/*
-router.post('/api/shows', (req, res, err) => {
-  //const search = req.params.;
-  res.send('Success');
-});
-*/
 
 /**
  *
@@ -105,14 +77,12 @@ router.post('/api/shows', (req, res, err) => {
 function tvShowLogin() {
   return new Promise((resolve, reject) => {
     const auth = {
-      // apikey: process.env.showApiKey,
-      apikey: 'kj3923jiejfwj093j4',
+      apikey: process.env.showApiKey,
       username: process.env.user,
       userkey: process.env.uniqueId
     };
 
     axios.post('https://api.thetvdb.com/login', auth).then((response) => {
-      // console.log('response ', response);
 
       // set cookie
       /* const date = new Date();
