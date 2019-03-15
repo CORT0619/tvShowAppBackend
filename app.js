@@ -48,6 +48,8 @@ router.post('/api/firebase/login', (req, res, err) => {
 });
 
 // tvshow api
+
+/* Retrieve TV Show Overview */
 router.get('/api/show/overview/:show', (req, res, err) => {
   const { show } = req.params;
   const { token } = req.cookies;
@@ -67,6 +69,11 @@ router.get('/api/show/overview/:show', (req, res, err) => {
         console.log('error ', err);
       });
 });
+
+/* Retrieve Show Images */
+/* Retrieve Series Information */
+/* Retrieve Episode Information */
+
 
 /**
  *
