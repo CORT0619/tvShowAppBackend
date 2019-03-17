@@ -49,6 +49,33 @@ router.post('/api/firebase/login', (req, res, err) => {
 
 // tvshow api
 
+/* Get Refresh Token */
+router.get('/api/refresh_token', (req, res, err) => {
+  const { token } = req.cookies;
+
+  const url = `https://api.thetvdb.com/refresh_token`;
+
+  const headers = {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  };
+  axios.get(url, headers)
+      .then((response) => {
+        console.log(response.data.token);
+        res.cookie('token', response.data.token, {
+          maxAge: 86400000,
+          expires: new Date(Date.now() + 86400000),
+          secure: false,
+          httpOnly: true
+        }).status(200);
+      })
+      .catch((err) => {
+        console.log(err);
+        // res.status().json({ 'error': '' });
+      });
+});
+
 /* Retrieve TV Show Overview */
 router.get('/api/show/overview/:show', (req, res, err) => {
   const { show } = req.params;
@@ -67,13 +94,85 @@ router.get('/api/show/overview/:show', (req, res, err) => {
       })
       .catch((err) => {
         console.log('error ', err);
+        // res.status().send();
       });
 });
 
 /* Retrieve Show Images */
-/* Retrieve Series Information */
-/* Retrieve Episode Information */
+router.get('/api/show/images/:seriesId', (req, res, err) => {
+  // contains options to search by certain resolutions and image types
+  const { seriesId } = req.params;
+  const { token } = req.cookies;
 
+  // const url = `https://api.thetvdb.com/series/${seriesId}/images/query?keyType=series&subkey=graphical`; // returns banners
+  const url = `https://api.thetvdb.com/series/${seriesId}/images/query?keyType=poster`; // returns large posters
+  // const url = `https://api.thetvdb.com/series/${seriesId}/images/query/params`; // get params needed for image call
+  // https://www.thetvdb.com/banners/ - add filename from this call to get the image for the show
+
+  const options = {
+    method: 'GET',
+    headers: { 'Authorization': `Bearer ${token}` },
+    url
+  };
+
+  axios(options)
+      .then((response) => {
+        console.log(response.data.data);
+        // console.log('response ', JSON.parse(response.data));
+        res.status(200).json(response.data.data);
+      })
+      .catch((err) => {
+        console.log('error ', err);
+        // res.status().json({ error: err });
+      });
+});
+
+/* Retrieve Episode Information */
+router.get('/api/show/episodes/:seriesId', (req, res, err) => {
+  const { seriesId } = req.params;
+  const { token } = req.cookies;
+
+  const headers = {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  };
+
+  // const url = `https://api.thetvdb.com/episodes/${episodeId}`;
+  const url = `https://api.thetvdb.com/series/${seriesId}/episodes`;
+  axios.get(url, headers)
+      .then((response) => {
+        // console.log('response ', response.data);
+        console.log('response ', response);
+        res.status(response.status).send(response.data);
+      })
+      .catch((err) => {
+        console.log('error ', err);
+      });
+});
+
+/* Retrieve Show Actors */
+router.get('/api/show/episodes/actors/:seriesId', (req, res, err) => {
+  const { seriesId } = req.params;
+  const { token } = req.cookies;
+
+  const headers = {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  };
+
+  const url = `https://api.thetvdb.com/series/${seriesId}/actors`;
+  axios.get(url, headers)
+      .then((response) => {
+        console.log('response ', response.data.data);
+        res.status(response.status).send(response.data.data);
+      })
+      .catch((err) => {
+        console.log('error ', err);
+        // res.status(400).send();
+      });
+});
 
 /**
  *
@@ -90,7 +189,6 @@ function tvShowLogin() {
     };
 
     axios.post('https://api.thetvdb.com/login', auth).then((response) => {
-
       // set cookie
       /* const date = new Date();
       date.setHours(date.getHours() + 24); */
