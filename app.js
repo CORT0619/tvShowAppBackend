@@ -24,7 +24,7 @@ router.post('/api/firebase/login', (req, res, err) => {
   firebase.auth().signInWithEmailAndPassword(email, password)
       .then(async () => {
         // eslint-disable-next-line
-        // if (!cookies.token) { // TODO: Implement logic to check if token is also expired
+        if (!cookies.token) { // TODO: Implement logic to check if token is also expired
           try {
             const results = await tvShowLogin();
             res.cookie('token', results, {
@@ -39,7 +39,7 @@ router.post('/api/firebase/login', (req, res, err) => {
             // res.status(500).send('Unable to process your request');
             res.status(500).json({'msg': 'Unable to process your request'});
           }
-        // }
+        }
         res.status(200).json({ 'msg': 'Login successful!' });
       })
       .catch((err) => {
