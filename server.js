@@ -47,9 +47,17 @@ const config = {
 /* const firebaseConf = */firebase.initializeApp(config);
 // console.log('firebaseConf ', firebaseConf);
 
+// error handling
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ error: err });
+});
+
 // import routes
-const routes = require('./app');
+const routes = require('./routes/routes');
 app.use(routes);
+
+// app.on uncaught exception
 
 app.listen(port, () => {
   console.log('Listening on PORT %d', port);

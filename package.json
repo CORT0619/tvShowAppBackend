@@ -17,6 +17,7 @@
     "dotenv": "^6.2.0",
     "express": "^4.16.4",
     "firebase": "^5.8.2",
+    "firebase-admin": "^7.1.1",
     "jsonwebtoken": "^8.4.0"
   },
   "devDependencies": {
