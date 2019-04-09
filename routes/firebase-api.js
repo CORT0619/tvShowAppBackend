@@ -52,7 +52,7 @@ function login(cookies, email, password) {
               returnedResponse.msg = 'Unable to process your request';
             }
           }
-          console.log('response ', response);
+
           returnedResponse.status = 200;
           returnedResponse.msg = 'Login successful!';
           resolve(returnedResponse);

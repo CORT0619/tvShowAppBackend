@@ -25,32 +25,7 @@ router.post('/api/firebase/registration', (req, res, err) => {
 /* Firebase Login */
 router.post('/api/firebase/login', async (req, res, next) => {
   const returnedResponse = {};
-  // await firebaseApi.login(
-  //     req.cookies,
-  //     req.body.email,
-  //     req.body.password
-  // )
-  //     .then((loginResponse) => {
-  //       console.log('loginResponse ', loginResponse);
-  //       if (loginResponse.token) {
-  //         // if results successful from sending back cookie
-  //         console.log('here');
-  //         res.cookie('token', loginResponse.token, {
-  //           maxAge: 86400000,
-  //           expires: new Date(Date.now() + 86400000),
-  //           secure: false,
-  //           httpOnly: true
-  //         });
-  //         return res.status(200); // not sending back
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       console.log('error ', error);
-  //       res.status(error.status).json({
-  //         msg: error.msg || '',
-  //         error: error.error || ''
-  //       });
-  //     });
+
   try {
     const loginResponse = await firebaseApi.login(
         req.cookies,
@@ -63,12 +38,6 @@ router.post('/api/firebase/login', async (req, res, next) => {
       returnedResponse.token = loginResponse.token;
       returnedResponse.status = loginResponse.status;
       returnedResponse.data = loginResponse.msg;
-      // res.cookie('token', loginResponse.token, {
-      //   maxAge: 86400000,
-      //   expires: new Date(Date.now() + 86400000),
-      //   secure: false,
-      //   httpOnly: true
-      // });
     }
   } catch (e) {
     console.log('e ', e);
@@ -148,33 +117,47 @@ router.get('/api/show/images/:seriesId', async (req, res, err) => {
 /* Retrieve Episode Information - episodes, actors, images */
 router.get('/api/show/episodes/:seriesId', async (req, res, next) => {
   const response = { data: {}};
-  const episodes = await retrieveEpisodes(
-      req.params.seriesId,
-      req.cookies.token
-  );
+  const responses = await Promise.all([
+    retrieveEpisodes(req.params.seriesId, req.cookies.token),
+    retrieveActors(req.params.seriesId, req.cookies.token),
+    tvdbApi.retrieveImages(req.params.seriesId, req.cookies.token)
+  ]);
+  console.log('responses ', responses);
 
-  if (episodes && episodes.data && episodes.data.data) {
-    response.data.episodes = episodes.data.data;
-    const actors = await retrieveActors(req.params.seriesId, req.cookies.token);
-    if (actors) {
-      response.data.actors = actors.data;
-      const images = await tvdbApi.retrieveImages(
-          req.params.seriesId,
-          req.cookies.token
-      );
-      if (images) {
-        response.data.images = images.data;
-        res.status(images.status || 500).json({
-          data: response.data || '',
-          error: images.err || ''
-        });
-      }
-      // res.status(actors.status || 400).json({
-      //   data: response.data || [],
-      //   error: actors.error || ''
-      // });
-    }
+  if (responses && responses[0].data && responses[1].data && responses[2].data) {
+    response.data.episodes = responses[0].data.data;
+    response.data.actors = responses[1].data;
+    response.data.images = responses[2].data;
+    response.status = 200;
+    res.status(200).json({ data: response.data || {} });
   }
+  res.status(response.status || 500).json({
+    data: response.data || {},
+    error: responses[0].error || responses[1].error || responses[2].error || {}
+  });
+  // const episodes = await retrieveEpisodes(
+  //     req.params.seriesId,
+  //     req.cookies.token
+  // );
+
+  // if (episodes && episodes.data && episodes.data.data) {
+  //   response.data.episodes = episodes.data.data;
+  //   const actors = await retrieveActors(req.params.seriesId, req.cookies.token);
+  //   if (actors) {
+  //     response.data.actors = actors.data;
+  //     const images = await tvdbApi.retrieveImages(
+  //         req.params.seriesId,
+  //         req.cookies.token
+  //     );
+  //     if (images) {
+  //       response.data.images = images.data;
+  //       res.status(images.status || 500).json({
+  //         data: response.data || '',
+  //         error: images.err || ''
+  //       });
+  //     }
+  //   }
+  // }
 });
 
 /* Retrieve Show Actors */
