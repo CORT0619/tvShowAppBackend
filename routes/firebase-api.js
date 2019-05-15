@@ -46,6 +46,7 @@ function login(cookies, email, password) {
           if (!cookies.token) { // TODO: Implement logic to check if token is also expired
             try {
               const token = await tvdbApi.tvShowLogin();
+              console.log('token ', token);
               returnedResponse.token = token;
             } catch (e) {
               returnedResponse.status = 500;

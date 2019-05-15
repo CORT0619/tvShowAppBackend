@@ -26,23 +26,25 @@ router.post('/api/firebase/registration', (req, res, err) => {
 router.post('/api/firebase/login', async (req, res, next) => {
   const returnedResponse = {};
 
-  try {
-    const loginResponse = await firebaseApi.login(
-        req.cookies,
-        req.body.email,
-        req.body.password
-    );
-    console.log('loginResponse ', loginResponse);
+  // errorHandler(firebaseApi.login(
+  //     req.cookies,
+  //     req.body.email,
+  //     req.body.password
+  // ));
 
-    if (loginResponse.token) {
-      returnedResponse.token = loginResponse.token;
-      returnedResponse.status = loginResponse.status;
-      returnedResponse.data = loginResponse.msg;
-    }
-  } catch (e) {
-    console.log('e ', e);
-    returnedResponse.status = e.status;
-    returnedResponse.error = e.error;
+  const loginResponse = await firebaseApi.login(
+      req.cookies,
+      req.body.email,
+      req.body.password
+  ).catch((err) => {
+    // next(err);
+    res.status(400).json({ error: err });
+  });
+
+  if (loginResponse && loginResponse.token) {
+    returnedResponse.token = loginResponse.token;
+    returnedResponse.status = loginResponse.status;
+    returnedResponse.data = loginResponse.msg;
   }
 
   if (returnedResponse.token) {
@@ -71,6 +73,7 @@ router.get('/api/refresh_token', (req, res, err) => {
       maxAge: 86400000,
       expires: new Date(Date.now() + 86400000),
       secure: false,
+      path: 'menu',
       httpOnly: true
     }).status(200);
   }
@@ -80,17 +83,16 @@ router.get('/api/refresh_token', (req, res, err) => {
 /* Retrieve TV Show Overview */
 // const overviewArr = [tvShowOverview, retrieveEpisodes];
 router.get('/api/show/overview/:show', async (req, res, next) => {
-  const overview = await tvShowOverview(req.params.show, req.cookies.token);
-  // res.locals.show = req.params.show;
-  // const response = tvdbApi.retrieveShowOverview(
+  console.log('req.cookies ', req);
+
+  // errorHandler(tvShowOverview(
   //     req.params.show,
   //     req.cookies.token
-  // );
-  // res.status(response.status || 500).json({
-  //   data: response.data.data || '',
-  //   error: response.err || ''
-  // });
-  // next();
+  // ));
+
+  const overview = await tvShowOverview(req.params.show, req.cookies.token);
+  // res.locals.show = req.params.show;
+
   if (overview) {
     res.status(overview.status).json({
       data: overview.data || [],
@@ -171,6 +173,16 @@ router.get('/api/show/episodes/:seriesId', async (req, res, next) => {
 //     error: response.err || '' // verify this is correct
 //   });
 // });
+
+/**
+ * 
+ * @param {function} someFunc
+ * @return {Function}
+ */
+async function errorHandler(someFunc) {
+  return await someFunc.catch();
+}
+
 
 /**
  * @param {*} show

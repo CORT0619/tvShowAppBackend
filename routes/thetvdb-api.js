@@ -15,6 +15,7 @@ function tvShowLogin() {
     };
 
     axios.post('https://api.thetvdb.com/login', auth).then((response) => {
+      console.log('tv api response ', response);
       resolve(response.data.token);
     }).catch((err) => {
       console.log('error ', err);
@@ -64,8 +65,12 @@ function retrieveShowOverview(show, token) {
     const url = `https://api.thetvdb.com/search/series?name=${show}`;
     axios.get(url, headers)
         .then((response) => {
-          console.log('response.data ', response);
           returnedResponse.status = response.status;
+          response.data.data.forEach((elem, i, arr) => {
+            if (elem && elem.banner) {
+              arr[i].banner = `https://www.thetvdb.com/banners/${elem.banner}`;
+            }
+          });
           returnedResponse.data = response.data.data;
           resolve(returnedResponse);
         })
@@ -103,6 +108,7 @@ function retrieveImages(seriesId, token) {
         .then((response) => {
           returnedResponse.status = 200;
           returnedResponse.data = response.data.data;
+          console.log('image response ', returnedResponse.data);
           resolve(returnedResponse);
         })
         .catch((err) => {
