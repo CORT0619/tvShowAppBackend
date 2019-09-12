@@ -65,6 +65,19 @@ router.post('/api/firebase/login', async (req, res, next) => {
   });
 });
 
+/* Firebase Logout */
+router.post('/api/firebase/logout', async (req, res, next) => {
+  const logoutResponse = await firebaseApi.logout().catch((err) => {
+    res.status(400).json({ error: err });
+  });
+
+  if (logoutResponse) {
+    return res.status(200).json({ data: 'logged out successful!' });
+  }
+
+  res.status(401).json({ data: 'no user authenticated.' });
+});
+
 /* Get Refresh Token for tvdb api*/
 router.get('/api/refresh_token', (req, res, err) => {
   const response = tvdbApi.retrieveRefreshToken(req.cookies.token);
@@ -175,7 +188,7 @@ router.get('/api/show/episodes/:seriesId', async (req, res, next) => {
 // });
 
 /**
- * 
+ *
  * @param {function} someFunc
  * @return {Function}
  */

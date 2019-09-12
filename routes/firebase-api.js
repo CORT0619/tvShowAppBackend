@@ -68,6 +68,20 @@ function login(cookies, email, password) {
 }
 
 /**
+ * @description logs out the currently logged in user
+ * @return {Promise}
+ */
+function logout() {
+  return new Promise((resolve, reject) => {
+    firebase.auth().signOut().then((response) => {
+      resolve(response);
+    }, (err) => {
+      reject(err);
+    });
+  });
+}
+
+/**
  * @param {*} firstName
  * @param {*} lastName
  */
@@ -81,6 +95,7 @@ async function addUser({ firstName, lastName }) {
 module.exports = {
   accountRegistration,
   login,
-  addUser
+  addUser,
+  logout
 };
 
