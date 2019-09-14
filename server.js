@@ -106,7 +106,14 @@ function logErrors(err, req, res, next) {
   next(err);
 }
 
-function handleErrors(err, req, res) {
-  console.log('error ', err);
-  res.status(500);
+/**
+ *
+ * @param {*} err
+ * @param {*} req
+ * @param {*} res
+ */
+function handleErrors(param) {
+  console.log('params ', params);
+  // console.log('error ', err);
+  // res.status(500);
 }
