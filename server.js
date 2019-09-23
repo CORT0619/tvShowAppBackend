@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const winston = require('winston');
 
 const firebase = require('firebase');
 require('dotenv').config();
@@ -14,6 +15,18 @@ app.use(bodyParser.json()); // parsing application/json
 app.use(bodyParser.urlencoded({
   extended: true
 })); // parsing application/x-www-form-urlencoded
+
+// setup winston - logging
+const logConfiguration = {
+  'transports': [
+    new winston.transports.Console(),
+    new winston.transports.File({
+      filename: './logs/error-log.log'
+    })
+  ]
+};
+
+const logger = winston.createLogger(logConfiguration); // create the logger
 
 app.use((req, res, next) => {
   // res.header('Access-Control-Allow-Origin', '*');
@@ -47,10 +60,60 @@ const config = {
 /* const firebaseConf = */firebase.initializeApp(config);
 // console.log('firebaseConf ', firebaseConf);
 
+// app.use((err, req, res, next) => {
+//   console.error(err);
+//   res.status(500).json({ error: err });
+// });
+
 // import routes
-const routes = require('./app');
+const routes = require('./routes/routes');
 app.use(routes);
+
+// app.on uncaught exception
+if (process.env.NODE_ENV === 'development') {
+  app.use(logErrors);
+}
+
+if (process.env.NODE_ENV === 'production') {
+  app.use();
+}
+
+// handle errors
+app.use(handleErrors);
+
+process.on('unhandledRejection', (err) => {
+  console.log('error ', err);
+});
 
 app.listen(port, () => {
   console.log('Listening on PORT %d', port);
 });
+
+
+/* Error handing functions */
+/**
+ * @param {*} err
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ */
+function logErrors(err, req, res, next) {
+  logger.log({ // log the message
+    message: err,
+    level: 'error'
+  });
+  console.error(err.stack);
+  next(err);
+}
+
+/**
+ *
+ * @param {*} err
+ * @param {*} req
+ * @param {*} res
+ */
+function handleErrors(param) {
+  console.log('params ', params);
+  // console.log('error ', err);
+  // res.status(500);
+}
