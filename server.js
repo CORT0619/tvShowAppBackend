@@ -112,8 +112,7 @@ function logErrors(err, req, res, next) {
  * @param {*} req
  * @param {*} res
  */
-function handleErrors(param) {
-  console.log('params ', params);
-  // console.log('error ', err);
-  // res.status(500);
+function handleErrors(err, req, res, next) {
+  console.log('error ', err);
+  res.status(500).send('an error has occurred');
 }

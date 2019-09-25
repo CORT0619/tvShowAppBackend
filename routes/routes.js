@@ -3,9 +3,7 @@ const express = require('express');
 const router = express.Router();
 const firebaseApi = require('./firebase-api');
 const tvdbApi = require('./thetvdb-api');
-
-// jwt
-// const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 
 /* Account Registration */
 router.post('/api/firebase/registration', (req, res, err) => {
