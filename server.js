@@ -3,8 +3,8 @@ const app = express();
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const winston = require('winston');
+const { format } = require('winston');
 
-const firebase = require('firebase');
 require('dotenv').config();
 
 // setup cookie parser
@@ -18,15 +18,30 @@ app.use(bodyParser.urlencoded({
 
 // setup winston - logging
 const logConfiguration = {
-  'transports': [
-    new winston.transports.Console(),
-    new winston.transports.File({
-      filename: './logs/error-log.log'
-    })
+  level: 'info',
+  // format: winston.format.json(),
+  format: winston.format.combine(
+    winston.format.timestamp({
+      format: 'MM-DD-YYYY HH:mm:ss'
+    }),
+    winston.format.colorize(),
+    winston.format.errors({ stack: true }),
+    winston.format.splat(),
+    winston.format.json()
+  ),
+  transports: [
+    new winston.transports.File({ filename: './logs/error-log.log',level: 'error' }),
+    new winston.transports.File({ filename: './logs/all-logs.log' })
   ]
 };
 
 const logger = winston.createLogger(logConfiguration); // create the logger
+
+if (process.env.NODE_ENV !== 'production') {
+  logger.add(new winston.transports.Console({
+    format: winston.format.simple()
+  }));
+}
 
 app.use((req, res, next) => {
   // res.header('Access-Control-Allow-Origin', '*');
@@ -49,25 +64,10 @@ app.use((req, res, next) => {
 
 const port = process.env.PORT || 3000;
 
-// firebase config
-const config = {
-  apiKey: process.env.firebaseApiKey,
-  authDomain: process.env.authDomain,
-  databaseURL: process.env.databaseURL,
-  storageBucket: process.env.storageBucket
-};
-
-/* const firebaseConf = */firebase.initializeApp(config);
-// console.log('firebaseConf ', firebaseConf);
-
-// app.use((err, req, res, next) => {
-//   console.error(err);
-//   res.status(500).json({ error: err });
-// });
-
 // import routes
 const routes = require('./routes/routes');
-app.use(routes);
+app.use('/api', routes);
+app.all('*', (req, res) => res.status(404).send('The request was malformed.'));
 
 // app.on uncaught exception
 if (process.env.NODE_ENV === 'development') {
@@ -89,21 +89,13 @@ app.listen(port, () => {
   console.log('Listening on PORT %d', port);
 });
 
-
-/* Error handing functions */
-/**
- * @param {*} err
- * @param {*} req
- * @param {*} res
- * @param {*} next
- */
-function logErrors(err, req, res, next) {
+function logErrors(req, res, next) {
   logger.log({ // log the message
-    message: err,
+    message: '',
     level: 'error'
   });
-  console.error(err.stack);
-  next(err);
+  console.error(/*err.stack*/);
+  next(/*err*/);
 }
 
 /**
@@ -112,7 +104,7 @@ function logErrors(err, req, res, next) {
  * @param {*} req
  * @param {*} res
  */
-function handleErrors(err, req, res, next) {
-  console.log('error ', err);
+function handleErrors(req, res, next) {
+  // console.log('error ', err);
   res.status(500).send('an error has occurred');
 }

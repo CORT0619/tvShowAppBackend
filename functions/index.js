@@ -1,17 +1,12 @@
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
-
 const express = require('express');
 const app = express();
 const cookieParser = require('cookie-parser');
-
 
 const serviceAccount = require('./svcAcct-tvShowApp.json');
 
 const config = JSON.parse(process.env.FIREBASE_CONFIG);
 config.credential = admin.credential.cert(serviceAccount);
 admin.initializeApp(config);
-
 
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
