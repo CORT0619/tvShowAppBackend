@@ -5,7 +5,9 @@ const multer = require('multer');
 const upload = multer({ dest: './public/uploads/' });
 
 /* Account Registration */
-userRouter.post('/register', (req, res, err) => {});
+userRouter.post('/register', (req, res, err) => {
+	const { name, username, password } = req.body;
+});
 
 
 /* Upload user photo */
@@ -16,7 +18,9 @@ userRouter.post('/photo-upload', upload.single('likeness'), async (req, res, nex
 
 
 /* Login */
-userRouter.post('/login', async (req, res, next) => {});
+userRouter.post('/login', async (req, res, next) => {
+	const { username, password } = req.body;
+});
 
 
 /* Logout */

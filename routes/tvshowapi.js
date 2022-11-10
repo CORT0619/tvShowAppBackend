@@ -17,7 +17,7 @@ async function searchTvShows(show) {
 			error.message = 'There was an error processing your request.';
 			throw error;
 		}
-		return results.data;
+		return results?.data;
 	} catch (err) {
 		// TODO: need to add some logging here
 		console.log('err ', err);
@@ -33,7 +33,7 @@ async function searchTvShows(show) {
 async function searchSingleShow(id) { // tt0213370
 	try {
 		const url = showApi.searchShowById(id);
-		return axios.get(url);
+		return await axios.get(url);
 	} catch (err) {
 		console.log('err ', err);
 		return err;
@@ -47,7 +47,7 @@ async function searchSingleShow(id) { // tt0213370
 async function retrieveShowActors(id) {
 	try {
 		const url = showApi.getActors(id);
-		return axios.get(url);
+		return await axios.get(url);
 	} catch (err) {
 		console.log('err ', err);
 	}
@@ -57,7 +57,7 @@ async function retrieveShowActors(id) {
 async function retrieveShowEpisodes(id) {
 	try {
 		const url = showApi.retrieveShowEpisodes(id);
-		return axios.get(url);
+		return await axios.get(url);
 	} catch (err) {
 		console.log('err ', err);
 	}
@@ -67,14 +67,16 @@ async function retrieveShowInformation(showId, mazeId) {
 	const showObj = {};
 	try {
 		const showInfo = await Promise.allSettled([
-			searchSingleShow(showId),
-			retrieveShowActors(mazeId),
-			retrieveShowEpisodes(mazeId)
+			searchSingleShow(mazeId),
+			retrieveShowActors(showId),
+			retrieveShowEpisodes(showId)
 		]);
 
-		const showObj = showInfo[0].value.data;
-		showObj.cast = showInfo[1].value.data;
-		showObj.episodes =  showInfo[2].value.data;
+		console.log('showInfo ', showInfo)
+
+		const showObj = showInfo[0]?.value?.data;
+		showObj.cast = showInfo[1]?.value?.data;
+		showObj.episodes =  showInfo[2]?.value?.data;
 
 		return showObj;
 	} catch (err) {
@@ -85,7 +87,7 @@ async function retrieveShowInformation(showId, mazeId) {
 async function getPopularShows() {
 	try {
 		const url = showApi.retrievePopularShows();
-		return axios.get(url);
+		return await axios.get(url);
 	} catch (err) {
 		console.log('err ', err);
 	}

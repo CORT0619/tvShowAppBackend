@@ -12,7 +12,8 @@
   "author": "Crystal R. Williams",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.18.0",
+    "aws-sdk": "^2.1252.0",
+    "axios": "^1.1.3",
     "body-parser": "^1.18.3",
     "cookie-parser": "^1.4.4",
     "dotenv": "^6.2.0",
@@ -22,7 +23,7 @@
   },
   "devDependencies": {
     "eslint": "^5.14.1",
-    "nodemon": "^1.19.4",
+    "nodemon": "^2.0.20",
     "winston": "^3.7.2"
   }
 }
