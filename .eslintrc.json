@@ -13,6 +13,7 @@
         "sourceType": "module"
     },
     "rules": {
+        "linebreak-style":"off",
         "new-cap":"off",
         "object-curly-spacing": 0,
         "comma-dangle":"off"

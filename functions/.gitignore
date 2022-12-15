@@ -2,8 +2,5 @@
 node_modules/
 
 # ignore secrets
+svcAcct-tvShowApp.json
 .env
-lib/key.json
-
-# old firebase files
-old/

@@ -6,7 +6,7 @@ const axios = require('axios');
  * @param {*} cookies
  * @return { promise} with the response or error
  */
-async function tvShowLogin() {
+async function login() {
 	const auth = {
 		apikey: process.env.showApiKey,
 		username: process.env.user,
