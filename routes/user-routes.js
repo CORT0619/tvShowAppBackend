@@ -6,7 +6,7 @@ const upload = multer({ dest: './public/uploads/' });
 
 /* Account Registration */
 userRouter.post('/register', (req, res, err) => {
-	const { name, username, password } = req.body;
+	const { name, email, username, password } = req.body;
 });
 
 

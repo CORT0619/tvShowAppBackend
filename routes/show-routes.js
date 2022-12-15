@@ -11,10 +11,12 @@ showRouter.get('/search/:show', async (req, res, next) => {
 		if (results instanceof Error) {
 			return res.status(results.status).json({ error: results.message });
 		}
+
+		console.log('shows ', results);
 		return res.json({ shows: results });
 	} catch (err) {
 		// TODO: add in some error logging here
-		res.json({error: err});
+		res.json({error: err}).status(500);
 	}
 });
 
