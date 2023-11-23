@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		"module": "es2022",
+		"sourceMap": true,
+		"target": "ES2017",
+		"outDir": "./dist",
+		"rootDir": "./src",
+		"noImplicitAny": true,
+		"declaration": true,
+		"moduleResolution": "Node10"
+	},
+	"include": ["src/**/*"],
+	"exclude": ["**/*.spec.ts"]
+}

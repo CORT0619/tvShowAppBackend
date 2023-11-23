@@ -3,13 +3,15 @@ const showRouter = express.Router();
 const showApi = require('./tvshowapi');
 
 /* Search for tv shows */
-showRouter.get('/search/:show', async (req, res, next) => {
+showRouter.get('/search', async (req, res, next) => {
 	// TODO: need to handle errors better
-	const { show } = req.params;
+	const { show } = req.query;
+
 	try {
 		const results = await showApi.searchTvShows(show);
 		if (results instanceof Error) {
 			return res.status(results.status).json({ error: results.message });
+			// throw an error here?
 		}
 
 		console.log('shows ', results);
@@ -20,12 +22,11 @@ showRouter.get('/search/:show', async (req, res, next) => {
 	}
 });
 
-
 /* Retrieve Individual Show Information */
 showRouter.get('/:mazeId', async(req, res, next) => {
 	const { mazeId } = req.params;
 	const { showId } = req.body;
-
+console.log('and here');
 	try {
 		const response = await showApi.retrieveShowInformation(showId, mazeId);
 		console.log('response ', response);
@@ -34,6 +35,5 @@ showRouter.get('/:mazeId', async(req, res, next) => {
 		console.log('err ', err);
 	}
 });
-
 
 module.exports = showRouter;

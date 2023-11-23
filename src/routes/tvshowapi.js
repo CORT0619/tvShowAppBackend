@@ -1,5 +1,6 @@
 const axios = require('axios');
 const showApi = require('../tvmazeapi');
+const logger = require('../logger');
 
 /**
  * @description this endpoint allows users to search for a given show 
@@ -9,18 +10,21 @@ const showApi = require('../tvmazeapi');
 async function searchTvShows(show) {
 	try {
 		const url = showApi.showSearch(show);
+		console.log('url ', url);
 		const results = await axios.get(url);
 
 		if (results.status >= 400) {
-			const error = new Error();
-			error.status = results.status;
-			error.message = 'There was an error processing your request.';
-			throw error;
+			throw new Error('There was an error processing your request.');
+			// const error = new Error();
+			// error.status = results.status;
+			// error.message = 'There was an error processing your request.';
+			// throw error;
 		}
 		return results?.data;
 	} catch (err) {
 		// TODO: need to add some logging here
-		console.log('err ', err);
+		logger.log('error', err.message)
+		console.error('err ', err);
 		return err;
 	}
 }

@@ -2,8 +2,8 @@ const express = require('express');
 const app = express();
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const winston = require('winston');
-const { format } = require('winston');
+// const winston = require('winston');
+// const { format } = require('winston');
 
 require('dotenv').config();
 
@@ -17,31 +17,34 @@ app.use(bodyParser.urlencoded({
 })); // parsing application/x-www-form-urlencoded
 
 // setup winston - logging
-const logConfiguration = {
-  level: 'info',
-  // format: winston.format.json(),
-  format: winston.format.combine(
-    winston.format.timestamp({
-      format: 'MM-DD-YYYY HH:mm:ss'
-    }),
-    winston.format.colorize(),
-    winston.format.errors({ stack: true }),
-    winston.format.splat(),
-    winston.format.json()
-  ),
-  transports: [
-    new winston.transports.File({ filename: './logs/error-log.log',level: 'error' }),
-    new winston.transports.File({ filename: './logs/all-logs.log' })
-  ]
-};
+// const logConfiguration = {
+//   level: 'info',
+//   // format: winston.format.json(),
+//   format: winston.format.combine(
+//     winston.format.timestamp({
+//       format: 'MM-DD-YYYY HH:mm:ss'
+//     }),
+//     winston.format.colorize(),
+//     winston.format.errors({ stack: true }),
+//     winston.format.splat(),
+//     winston.format.json()
+//   ),
+//   transports: [
+//     new winston.transports.File({ 
+//       filename: './logs/error-log.log',
+//       level: 'error' 
+//     }),
+//     new winston.transports.File({ filename: './logs/all-logs.log' })
+//   ]
+// };
 
-const logger = winston.createLogger(logConfiguration); // create the logger
+// const logger = winston.createLogger(logConfiguration); // create the logger
 
-if (process.env.NODE_ENV !== 'production') {
-  logger.add(new winston.transports.Console({
-    format: winston.format.simple()
-  }));
-}
+// if (process.env.NODE_ENV !== 'production') {
+//   logger.add(new winston.transports.Console({
+//     format: winston.format.simple()
+//   }));
+// }
 
 app.use((req, res, next) => {
   // res.header('Access-Control-Allow-Origin', '*');

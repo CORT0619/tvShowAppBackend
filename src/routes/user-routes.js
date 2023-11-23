@@ -2,11 +2,22 @@ const express = require('express');
 const userRouter = express.Router();
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
+const { body } = require('express-validator');
+const bcrypt = require('bcrypt');
 const upload = multer({ dest: './public/uploads/' });
 
 /* Account Registration */
-userRouter.post('/register', (req, res, err) => {
+userRouter.post('/register', 
+body('email').isEmail().trim().escape(),
+body('username').trim().escape(),
+body('name').trim().escape(), async (req, res, err) => {
 	const { name, email, username, password } = req.body;
+
+	const numOfSalts = 11;
+	const salt = await bcrypt.genSalt(numOfSalts);
+	const saltedPassword = await bcrypt.hash(password, salt);
+
+	// TODO: store password in db
 });
 
 
@@ -18,7 +29,8 @@ userRouter.post('/photo-upload', upload.single('likeness'), async (req, res, nex
 
 
 /* Login */
-userRouter.post('/login', async (req, res, next) => {
+userRouter.post('/login',
+body('username').trim().escape(), async (req, res, next) => {
 	const { username, password } = req.body;
 });
 

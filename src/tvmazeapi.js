@@ -3,6 +3,7 @@ function showSearch(show) {
 }
 
 function searchShowById(id) {
+	console.log('URL ', `https://api.tvmaze.com/lookup/shows?imdb=${id}`)
 	return `https://api.tvmaze.com/lookup/shows?imdb=${id}`;
 }
 
