@@ -4,11 +4,22 @@
 		"sourceMap": true,
 		"outDir": "./dist",
 		"rootDir": "./src",
-		"noImplicitAny": true,
+		"noImplicitAny": false,
 		"declaration": true,
 		"moduleResolution": "Node16",
-		"esModuleInterop": true
+		"esModuleInterop": true,
+		"types": [
+			"jest",
+			"bcrypt",
+			"cookie-parser",
+			"jsonwebtoken",
+			"multer",
+			"node",
+			"express"
+		]
 	},
-	"include": ["src/**/*"],
-	"exclude": ["**/*.spec.ts"]
+	"include": [
+		"src/**/*",
+		"src/test/*"
+	]
 }
