@@ -1,21 +1,30 @@
 {
     "env": {
         "browser": true,
-        "es6": true
+        "es2021": true
     },
-    "extends": "google",
-    "globals": {
-        "Atomics": "readonly",
-        "SharedArrayBuffer": "readonly"
-    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-type-checked",
+        "plugin:@typescript-eslint/stylistic",
+        "prettier"
+    ],
     "parserOptions": {
-        "ecmaVersion": 2018,
+        "ecmaVersion": "latest",
         "sourceType": "module"
     },
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+        "@typescript-eslint"
+    ],
     "rules": {
-        "linebreak-style":"off",
-        "new-cap":"off",
-        "object-curly-spacing": 0,
-        "comma-dangle":"off"
-    }
+    },
+    "overrides": [
+        {
+            "files": ["*.js"],
+            "extends":["plugin:@typescript-eslint/disable-type-checked"]
+        }
+    ],
+    "root": true
 }
