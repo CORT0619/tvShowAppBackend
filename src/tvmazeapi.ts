@@ -14,6 +14,10 @@ export function retrieveShowEpisodes(showId: string): string {
 	return `https://api.tvmaze.com/shows/${showId}/episodes?specials=1`;
 }
 
+export function retrieveFullShowDetails(showId: string): string {
+	return `https://api.tvmaze.com/shows/${showId}?embed[]=episodes&embed[]=cast`;
+}
+
 export function retrievePopularShows(apiKey: string): string {
 	return `https://api.themoviedb.org/3/tv/popular?api_key=${apiKey}`;
 }
