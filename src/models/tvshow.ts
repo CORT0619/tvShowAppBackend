@@ -3,16 +3,22 @@ export type TvShowResults = {
 	show: TvShow;
 };
 
+enum ShowStatus {
+	"Ended",
+	"To Be Determined",
+	"Running"
+}
+
 export interface TvShow {
 	id: number;
 	externals: {
-		tvrage: number;
+		tvrage: number | null;
 		thetvdb: number;
 		imdb: string;
 	};
 	url: string;
 	name: string;
-	status: string; // TODO: clean this up: 'Ended'
+	status: ShowStatus;
 	summary: string;
 	image: {
 		medium: string;
@@ -25,7 +31,11 @@ export interface TvShow {
 	};
 	network: {
 		name: string;
-	}
+	};
+	_embedded: {
+		episodes: Episode[];
+		cast: Cast[];
+	};
 };
 
 export type PopularTvShow = {
@@ -41,12 +51,25 @@ export interface FullTvShowInfo extends TvShow {
 }
 
 export type Cast = {
-	id: number;
-	name: string;
-	image: {
-		medium: string;
-		original: string;
-	}
+	// id: number;
+	// name: string;
+	// image: {
+	// 	medium: string;
+	// 	original: string;
+	// }
+	person: {
+		id: number;
+		url: string;
+		name: string;
+		image: string;
+
+	};
+	character: {
+		id: number;
+		url: string;
+		name: string;
+		image: string;
+	};
 };
 
 export type Episode = {
@@ -56,4 +79,13 @@ export type Episode = {
 	season: number;
 	number: number;
 	airdate: string; // TODO: should this be a date?
+};
+
+export type PopularShows = {
+	overview: string;
+	id: number;
+	name: string;
+	image_path: string;
+	vote_average: number;
+	release_date: string; // TODO: another type?
 };
