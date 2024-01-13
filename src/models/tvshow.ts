@@ -3,7 +3,7 @@ export type TvShowResults = {
 	show: TvShow;
 };
 
-enum ShowStatus {
+export enum ShowStatus {
 	"Ended",
 	"To Be Determined",
 	"Running"
@@ -79,6 +79,7 @@ export type Episode = {
 	season: number;
 	number: number;
 	airdate: string; // TODO: should this be a date?
+	summary: string;
 };
 
 export type PopularShows = {
@@ -87,5 +88,5 @@ export type PopularShows = {
 	name: string;
 	image_path: string;
 	vote_average: number;
-	release_date: string; // TODO: another type?
+	first_air_date: string; // TODO: another type?
 };
