@@ -2,48 +2,59 @@ import express from'express';
 import * as showApi from './tvshowapi';
 const showRouter = express.Router();
 
-
 /* Search for tv shows */
 showRouter.get('/search', async (req, res, next) => {
 	// TODO: need to handle errors better - 404
 
-	const { show } = req.query;
-	console.log('show ', show);
-
-	if (typeof show !== 'string') {
-		throw new Error('an error has occurred'); // TODO: clean this up
-	}
+	const show = req.query.show as string;
 
 	try {
 		const results = await showApi.searchTvShows(show);
 
-		console.log('shows ', results);
-		return res.json({ shows: results });
+		return res.status(200).json({ shows: results });
 	} catch (err) {
-		// TODO: take a look at below
-		/*
-		if (err instanceof Error) {
-			return res.status(err?.status).json({ error: results.message }); // TODO: take a look at statuss
-			// throw an error here?
-		}*/
-		// TODO: add in some error logging here
-		res.json({error: err}).status(500);
+		next(err);
+	}
+});
+
+/* Get Popular Shows */
+showRouter.get('/popular', async (req, res, next) => {
+	try {
+		const response = await showApi.getPopularShows();
+		return res.status(200).send(response);
+	} catch (err) {
+		next(err);
 	}
 });
 
 /* Retrieve Individual Show Information */
-showRouter.get('/:showId/:mazeId', async(req, res, next) => {
-	const { mazeId } = req.params;
+showRouter.get('/:showId', async(req, res, next) => {
 	const { showId } = req.params;
-
+	
 	try {
-		const response = await showApi.retrieveShowInformation(showId, mazeId);
+		const response = await showApi.retrieveShowInformation(showId);
 
-		res.json(response);
+		res.status(200).json(response);
 	} catch (err) {
-		console.log('err ', err);
-		res.json(err).status(500); // TODO: make sure returning graceful error message
+		next(err);
 	}
 });
+
+showRouter.get('/series/:seriesId/episodes', async (req, res, next) => {
+	const { seriesId } = req.params;
+
+	try {
+		const episodes = await showApi.retrieveShowEpisodes(seriesId);
+		res.status(200).json({episodes});
+	} catch (err: any) {
+		// console.log('err ', err.toJSON());
+		next(err);
+	}
+});
+
+showRouter.all('*', (req, res, next) => {
+	res.status(404).send('route not found');
+});
+// TODO: add a catch all - not found route or add in error handler
 
 export default showRouter;

@@ -1,8 +1,8 @@
 import axios from 'axios';
 import * as showApi from '../tvmazeapi';
-import logger from '../logger';
-import { FullTvShowInfo, TvShow, TvShowResults } from '../models/tvshow';
+import { Episode, PopularShows, TvShow } from '../models/tvshow';
 import 'dotenv/config';
+import { AxiosError } from 'axios';
 
 /**
  * @description this endpoint allows users to search for a given show 
@@ -18,8 +18,7 @@ export async function searchTvShows(show: string): Promise<TvShow[]> {
 			throw new Error('There was an error processing your request.');
 		}
 
-		return results.data.map((res: TvShowResults) => {
-			const { id, url, name, status, summary, image, ended, schedule, network, externals } = res.show;
+		return results.data.map(({id, url, name, status, summary, image, ended, schedule, network, externals}) => {
 			return {
 				id,
 				name,
@@ -34,42 +33,7 @@ export async function searchTvShows(show: string): Promise<TvShow[]> {
 			}
 		});
 	} catch (err) {
-		// TODO: need to add some logging here
-		logger.log('error', err.message)
-		console.error('err ', err);
-		return err;
-	}
-}
-
-/**
- * @description allows the user to search for a given tv show by imdb id
- * @param {string} id - imdb id of a tv show
- * @returns the information for a given show
- * @example id tt0213370
- */
-export async function searchSingleShow(id: string) { // TODO: add a return type
-	try {
-		const url = showApi.searchShowById(id);
-		return await axios.get(url);
-	} catch (err) {
-		console.log('err ', err);
-		logger.log('error', err.message);
-		return err; // TODO: return a graceful error
-	}
-}
-
-/**
- *
- * @param {string} id 
- * @returns an array of the tv show cast
- */
-export async function retrieveShowActors(id: string) {
-	try {
-		const url = showApi.getActors(id);
-		return await axios.get(url);
-	} catch (err) {
-		console.log('err ', err);
-		logger.log('error', err.message);
+		throw new AxiosError(err.message, err.response.status);
 	}
 }
 
@@ -78,56 +42,62 @@ export async function retrieveShowActors(id: string) {
  * @param {string} id 
  * @returns an array of episodes for a given tv show
  */
-export async function retrieveShowEpisodes(id: string) {
+export async function retrieveShowEpisodes(id: string): Promise<Episode[]> {
 	try {
 		const url = showApi.retrieveShowEpisodes(id);
-		return await axios.get(url);
+		const response = (await axios.get(url)).data;
+		return response.map(({id, name, url, season, number, airdate, summary}) => {
+			return {
+				id,
+				name,
+				url,
+				season,
+				number,
+				airdate,
+				summary,
+			}
+		});
 	} catch (err) {
-		console.log('err ', err);
-		logger.log('error', err.message);
+		throw new AxiosError(err.message, err.response.status);
 	}
 }
 
 /**
  * 
- * @param showId 
- * @param mazeId 
+ * @param showId - id from the tvmazeapi
  * @returns an object with full tvshow information including
  * cast and episodes
  */
-export async function retrieveShowInformation(showId: string, mazeId: string): Promise<FullTvShowInfo> {
-	let showObj = {} as any as FullTvShowInfo; // TODO: how can this be done better?
+export async function retrieveShowInformation(showId: string): Promise<TvShow> {
+	let showObj = Object.create(null) as any as TvShow; // TODO: how can this be done better?
 	try {
-		const showInfo = await Promise.allSettled([
-			searchSingleShow(mazeId),
-			retrieveShowActors(showId),
-			retrieveShowEpisodes(showId)
-		]);
-
-		const result = (showInfo.filter((show) => show.status === 'fulfilled') as PromiseFulfilledResult<any>[] | undefined);
-		console.log('result ', result);
-
-
-		if (result.length > 0) { // TODO: need to make sure of the order of these
-			showObj = result[0]?.value?.data;
-			showObj['cast'] = result[1]?.value?.data;
-			showObj['episodes'] = result[2]?.value?.data;
-		}
+		const url = showApi.retrieveFullShowDetails(showId);
+		showObj = (await axios.get(url)).data;
 
 		return showObj;
 	} catch (err) {
-		console.log('err ', err);
-		logger.log('error', err.message);
+		// console.log('err ', err.toJSON());
+		throw new AxiosError(err.message, err.response.status);
 	}
 }
 
-export async function getPopularShows() { // TODO: add return type
+export async function getPopularShows(): Promise<PopularShows[]> {
 	try {
 		const url = showApi.retrievePopularShows(process.env.themoviedbApiKey);
-		return await axios.get(url);
+		const response = (await axios.get(url)).data;
+
+		return response.results.map(({id, overview, name, backdrop_path:image_path, vote_average, first_air_date}) => { // TODO: create type later
+			return {
+				id,
+				name,
+				overview,
+				image_path: `https://image.tmdb.org/t/p/w500/${image_path}`,
+				vote_average,
+				first_air_date
+			};
+		});
 	} catch (err) {
-		console.log('err ', err);
-		logger.log('error', err.message);
+		throw new AxiosError(err.message, err.response.status);
 	}
 }
 
