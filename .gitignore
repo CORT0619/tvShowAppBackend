@@ -7,3 +7,5 @@ lib/key.json
 
 # old firebase files
 old/
+
+logs/

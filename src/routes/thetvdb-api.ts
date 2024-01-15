@@ -1,4 +1,4 @@
-const axios = require('axios');
+import axios from 'axios';
 
 /**
  * @description logs user into the tvdb api
@@ -6,7 +6,7 @@ const axios = require('axios');
  * @param {*} cookies
  * @return { promise} with the response or error
  */
-async function login() {
+export async function login() {
 	const auth = {
 		apikey: process.env.showApiKey,
 		username: process.env.user,
@@ -22,7 +22,7 @@ async function login() {
  * @description retrieves new token
  * @param {string} token contains the unexpired refresh token
  */
-async function retrieveRefreshToken(token) {
+export async function retrieveRefreshToken(token) {
 	const url = `https://api.thetvdb.com/refresh_token`;
 	const headers = {
 		headers: {
@@ -43,7 +43,7 @@ async function retrieveRefreshToken(token) {
  * @param {string} token
  * @return {object} response or error
  */
-async function retrieveShowOverview(show, token) {
+export async function retrieveShowOverview(show, token) {
 	const returnedResponse = {};
 	const headers = {
 		headers: {
@@ -78,7 +78,7 @@ async function retrieveShowOverview(show, token) {
  * @param {string} token
  * @return {Promise}
  */
-async function retrieveImages(seriesId, token) {
+export async function retrieveImages(seriesId, token) {
 	const returnedResponse = {};
 	// contains options to search by certain resolutions and image types
 	// const url = `https://api.thetvdb.com/series/${seriesId}/images/query?keyType=series&subkey=graphical`; // returns banners
@@ -113,7 +113,7 @@ async function retrieveImages(seriesId, token) {
  * @param {string} token
  * @return {Promise}
  */
-async function retrieveEpisodes(seriesId, token) {
+export async function retrieveEpisodes(seriesId, token) {
 	const returnedResponse = {};
 	const headers = {
 		headers: {
@@ -145,7 +145,7 @@ async function retrieveEpisodes(seriesId, token) {
  * @param {string} token
  * @return {Promise}
  */
-async function retrieveActors(seriesId, token) {
+export async function retrieveActors(seriesId, token) {
 	const returnedResponse = {};
 	const headers = {
 		headers: {
@@ -169,12 +169,3 @@ async function retrieveActors(seriesId, token) {
 		return returnedResponse;
 	}
 }
-
-module.exports = {
-	tvShowLogin,
-	retrieveRefreshToken,
-	retrieveShowOverview,
-	retrieveImages,
-	retrieveEpisodes,
-	retrieveActors
-};
