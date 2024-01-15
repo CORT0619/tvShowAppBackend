@@ -18,7 +18,7 @@ export async function searchTvShows(show: string): Promise<TvShow[]> {
 			throw new Error('There was an error processing your request.');
 		}
 
-		return results.data.map(({id, url, name, status, summary, image, ended, schedule, network, externals}) => {
+		return results.data.map(({show:{id, url, name, status, summary, image, ended, schedule, network, externals}}) => {
 			return {
 				id,
 				name,
