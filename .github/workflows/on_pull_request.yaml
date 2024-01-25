@@ -8,10 +8,15 @@ on:
 jobs:
   run-tests:
     runs-on: ubuntu-latest
+    outputs:
+      output1: ${{ steps.step1.outputs }}
+      output2: ${{ steps.step2.outputs }}
     steps:
       - name: Checkout repo
+        id: step1
         uses: actions/checkout@v4
       - name: Node setup 
+        id: step2
         uses: actions/setup-node@v4
         with:
           node-version: 18
