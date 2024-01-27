@@ -44,7 +44,7 @@ describe('GET api/show/search ', () => {
 			expect(spy).toHaveBeenCalled();
 			expect(res.text).toStrictEqual('There was an error with the request.');
 		} catch (err) {
-			console.log('err ', err)
+			// console.log('err ', err)
 		}
 	});
 });
@@ -94,7 +94,7 @@ describe('GET api/show/popular', () => {
 			expect(errResponse.status).toEqual(500);
 			expect(errResponse.text).toStrictEqual('There was an error on the server.');
 		} catch (err) {
-			console.log('error ', err);
+			// console.log('error ', err);
 		}
 	});
 });
@@ -128,7 +128,7 @@ describe('GET api/show/:showId', () => {
 			expect(res.text).toStrictEqual('There was an error with the request.');
 			expect(spy).toHaveBeenCalled();
 		} catch (error) {
-			console.log('test err ', error);
+			// console.log('test err ', error);
 		}
 	});
 });
@@ -171,7 +171,7 @@ describe('GET api/show/series/:seriesId/episodes', () => {
 			expect(res.text).toStrictEqual('There was an error with the request.');
 			expect (spy).toHaveBeenCalledTimes(1);
 		} catch (err) {
-			console.log('error ', err);
+			// console.log('error ', err);
 		}
 	});
 });
