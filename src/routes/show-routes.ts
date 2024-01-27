@@ -1,4 +1,5 @@
 import express from'express';
+import { escape } from 'node:querystring';
 import * as showApi from './tvshowapi';
 const showRouter = express.Router();
 
@@ -7,9 +8,10 @@ showRouter.get('/search', async (req, res, next) => {
 	// TODO: need to handle errors better - 404
 
 	const show = req.query.show as string;
+	const escapedShow = escape(show.trim());
 
 	try {
-		const results = await showApi.searchTvShows(show);
+		const results = await showApi.searchTvShows(escapedShow);
 
 		return res.status(200).json({ shows: results });
 	} catch (err) {
