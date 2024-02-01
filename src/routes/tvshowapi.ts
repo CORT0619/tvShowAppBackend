@@ -1,8 +1,8 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import * as showApi from '../tvmazeapi';
-import { Episode, PopularShows, TvShow } from '../models/tvshow';
+import { Episode, FullTvShowInfo, PopularShows, TvShow, TvShowResults } from '../models/tvshow';
 import 'dotenv/config';
-import { AxiosError } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 
 /**
  * @description this endpoint allows users to search for a given show 
@@ -12,14 +12,25 @@ import { AxiosError } from 'axios';
 export async function searchTvShows(show: string): Promise<TvShow[]> {
 	try {
 		const url = showApi.showSearch(show);
-		const results = await axios.get(url);
+		const results = (await axios.get<AxiosResponse<TvShowResults, AxiosRequestConfig>>(url)).data;
 
 		if (results.status >= 400) {
 			throw new Error('There was an error processing your request.');
 		}
-
-		return results.data.map(({show:{id, url, name, status, summary, image, ended, schedule, network, externals}}) => {
-			return {
+		
+		return results.data.show.map(({
+			id,
+			url,
+			name,
+			status,
+			summary,
+			image,
+			ended,
+			schedule,
+			network,
+			externals,
+			_embedded
+		}) => ({
 				id,
 				name,
 				image,
@@ -29,11 +40,18 @@ export async function searchTvShows(show: string): Promise<TvShow[]> {
 				ended,
 				schedule,
 				network,
-				externals
-			}
-		});
+				externals,
+				_embedded
+		}));
 	} catch (err) {
-		throw new AxiosError(err.message, err.response.status);
+		let message = 'An error has occurred.';
+		let status = 500;
+		if (err instanceof AxiosError) {
+			message = err?.message;
+			status = err?.response?.status;
+		}
+		throw new AxiosError(message, status.toString());
+
 	}
 }
 
@@ -45,20 +63,25 @@ export async function searchTvShows(show: string): Promise<TvShow[]> {
 export async function retrieveShowEpisodes(id: string): Promise<Episode[]> {
 	try {
 		const url = showApi.retrieveShowEpisodes(id);
-		const response = (await axios.get(url)).data;
-		return response.map(({id, name, url, season, number, airdate, summary}) => {
-			return {
-				id,
-				name,
-				url,
-				season,
-				number,
-				airdate,
-				summary,
-			}
-		});
+		const response = (await axios.get<FullTvShowInfo>(url)).data;
+
+		return response.episodes.map(({ id, name, url, season, number, airdate, summary }) => ({
+			id,
+			name,
+			url,
+			season,
+			number,
+			airdate,
+			summary,
+		}));
 	} catch (err) {
-		throw new AxiosError(err.message, err.response.status);
+		let message = 'An error has occurred.';
+		let status = 500;
+		if (err instanceof AxiosError) {
+			message = err.message;
+			status = err.response.status;
+		}
+		throw new AxiosError(message, status.toString());
 	}
 }
 
@@ -69,35 +92,54 @@ export async function retrieveShowEpisodes(id: string): Promise<Episode[]> {
  * cast and episodes
  */
 export async function retrieveShowInformation(showId: string): Promise<TvShow> {
-	let showObj = Object.create(null) as any as TvShow; // TODO: how can this be done better?
+	let showObj = Object.create(null) as TvShow;
 	try {
 		const url = showApi.retrieveFullShowDetails(showId);
-		showObj = (await axios.get(url)).data;
+		const response = (await axios.get(url)).data as AxiosResponse<TvShow>;
+
+		showObj = {...response.data};
 
 		return showObj;
 	} catch (err) {
 		// console.log('err ', err.toJSON());
-		throw new AxiosError(err.message, err.response.status);
+		let message = 'An error has occurred.';
+		let status = 500;
+		if (err instanceof AxiosError) {
+			message = err.message;
+			status = err.response.status;
+		}
+		throw new AxiosError(message, status.toString());
 	}
 }
 
-export async function getPopularShows(): Promise<PopularShows[]> {
+export async function getPopularShows(): Promise<{id, overview, name, image_path, vote_average, first_air_date}[]> {
 	try {
 		const url = showApi.retrievePopularShows(process.env.themoviedbApiKey);
-		const response = (await axios.get(url)).data;
+		const response = (await axios.get<PopularShows>(url)).data;
 
-		return response.results.map(({id, overview, name, backdrop_path:image_path, vote_average, first_air_date}) => { // TODO: create type later
-			return {
+		return response.results.map(({ 
+			id,
+			overview,
+			name,
+			image_path: backdrop_path,
+			vote_average,
+			first_air_date
+		}) => ({
 				id,
 				name,
 				overview,
-				image_path: `https://image.tmdb.org/t/p/w500/${image_path}`,
+				image_path: `https://image.tmdb.org/t/p/w500/${backdrop_path}`,
 				vote_average,
 				first_air_date
-			};
-		});
+		}));
 	} catch (err) {
-		throw new AxiosError(err.message, err.response.status);
+		let message = 'An error has occurred.';
+		let status = 500;
+		if (err instanceof AxiosError) {
+			message = err.message;
+			status = err.response.status;
+		}
+		throw new AxiosError(message, status.toString());
 	}
 }
 
