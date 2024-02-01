@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import axios from 'axios';
 import * as showApi from '../tvmazeapi';
 import { Episode, FullTvShowInfo, PopularShows, TvShow, TvShowResults } from '../models/tvshow';
 import 'dotenv/config';
@@ -12,7 +12,7 @@ import { AxiosError, AxiosResponse } from 'axios';
 export async function searchTvShows(show: string): Promise<TvShow[]> {
 	try {
 		const url = showApi.showSearch(show);
-		const results = (await axios.get<AxiosResponse<TvShowResults, AxiosRequestConfig>>(url)).data;
+		const results = await axios.get<TvShowResults>(url);
 
 		if (results.status >= 400) {
 			throw new Error('There was an error processing your request.');
