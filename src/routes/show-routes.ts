@@ -10,7 +10,6 @@ showRouter.get(
 	query('show').notEmpty(),
 	(async (req, res, next) => {
 	// TODO: need to handle errors better - 404
-
 	const validated = validationResult(req);
 
 	if (validated.array().length) {

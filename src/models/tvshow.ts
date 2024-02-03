@@ -1,6 +1,6 @@
 export interface TvShowResults {
 	score: number;
-	show: TvShow[];
+	show: TvShow;
 };
 
 export enum ShowStatus {

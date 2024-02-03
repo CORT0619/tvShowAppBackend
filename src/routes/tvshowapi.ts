@@ -1,8 +1,8 @@
 import axios from 'axios';
 import * as showApi from '../tvmazeapi';
-import { Episode, FullTvShowInfo, PopularShows, TvShow, TvShowResults } from '../models/tvshow';
+import { Episode, PopularShows, TvShow, TvShowResults } from '../models/tvshow';
 import 'dotenv/config';
-import { AxiosError, AxiosResponse } from 'axios';
+import { AxiosError} from 'axios';
 
 /**
  * @description this endpoint allows users to search for a given show 
@@ -12,13 +12,13 @@ import { AxiosError, AxiosResponse } from 'axios';
 export async function searchTvShows(show: string): Promise<TvShow[]> {
 	try {
 		const url = showApi.showSearch(show);
-		const results = await axios.get<TvShowResults>(url);
+		const results = await axios.get<TvShowResults[]>(url);
 
 		if (results.status >= 400) {
 			throw new Error('There was an error processing your request.');
 		}
-		
-		return results.data.show.map(({
+	
+		return results.data.map(({ show: {
 			id,
 			url,
 			name,
@@ -30,7 +30,7 @@ export async function searchTvShows(show: string): Promise<TvShow[]> {
 			network,
 			externals,
 			_embedded
-		}) => ({
+		}}) => ({
 				id,
 				name,
 				image,
@@ -63,9 +63,9 @@ export async function searchTvShows(show: string): Promise<TvShow[]> {
 export async function retrieveShowEpisodes(id: string): Promise<Episode[]> {
 	try {
 		const url = showApi.retrieveShowEpisodes(id);
-		const response = (await axios.get<FullTvShowInfo>(url)).data;
+		const response = (await axios.get<Episode[]>(url)).data;
 
-		return response.episodes.map(({ id, name, url, season, number, airdate, summary }) => ({
+		return response.map(({ id, name, url, season, number, airdate, summary }) => ({
 			id,
 			name,
 			url,
@@ -95,9 +95,9 @@ export async function retrieveShowInformation(showId: string): Promise<TvShow> {
 	let showObj = Object.create(null) as TvShow;
 	try {
 		const url = showApi.retrieveFullShowDetails(showId);
-		const response = (await axios.get(url)).data as AxiosResponse<TvShow>;
+		const response = (await axios.get<TvShow>(url)).data;
 
-		showObj = {...response.data};
+		showObj = {...response};
 
 		return showObj;
 	} catch (err) {
