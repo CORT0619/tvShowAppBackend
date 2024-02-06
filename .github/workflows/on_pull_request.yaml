@@ -20,6 +20,13 @@ jobs:
       - run: echo "${{ github.repository }} is being cloned..." 
       - run: npm ci
       - run: npm test
-
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Apply migrations to the database
+        uses: actions/setup-node
+      - run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       # add code scanning

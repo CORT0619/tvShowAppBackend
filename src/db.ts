@@ -1,3 +1,10 @@
+import { Role } from '@prisma/client';
+import { createUser } from './prisma-db';
+
+export const registerUser = async (name: string, email: string, password: string, role?: Role) => {
+	await createUser(name, email, password, role)
+}
+
 /**
  * cache
 */ 
