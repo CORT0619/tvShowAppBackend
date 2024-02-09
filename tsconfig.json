@@ -15,7 +15,8 @@
 			"jsonwebtoken",
 			"multer",
 			"node",
-			"express"
+			"express",
+			"uuid"
 		]
 	},
 	"include": [

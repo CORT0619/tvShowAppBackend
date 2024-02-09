@@ -1,0 +1,19 @@
+name: db-changes
+on:
+  push:
+    branches:
+      - master
+jobs:
+  migrate-db:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Apply migrations to the database
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - run: ls
+      - run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}

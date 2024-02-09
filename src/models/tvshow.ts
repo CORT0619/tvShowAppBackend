@@ -1,4 +1,4 @@
-export type TvShowResults = {
+export interface TvShowResults {
 	score: number;
 	show: TvShow;
 };
@@ -27,7 +27,7 @@ export interface TvShow {
 	ended: string; // TODO: maybe make into date
 	schedule: {
 		time: string;
-		days: String[];
+		days: string[];
 	};
 	network: {
 		name: string;
@@ -38,7 +38,7 @@ export interface TvShow {
 	};
 };
 
-export type PopularTvShow = {
+export interface PopularTvShow {
 	id: number;
 	original_name: string;
 	overview: string;
@@ -50,7 +50,7 @@ export interface FullTvShowInfo extends TvShow {
 	episodes: Episode[];
 }
 
-export type Cast = {
+export interface Cast {
 	// id: number;
 	// name: string;
 	// image: {
@@ -72,7 +72,7 @@ export type Cast = {
 	};
 };
 
-export type Episode = {
+export interface Episode {
 	id: number;
 	name: string;
 	url: string;
@@ -82,11 +82,15 @@ export type Episode = {
 	summary: string;
 };
 
-export type PopularShows = {
+export interface PopularShows {
+	results: Shows[];
+};
+
+export interface Shows {
 	overview: string;
 	id: number;
 	name: string;
 	image_path: string;
 	vote_average: number;
 	first_air_date: string; // TODO: another type?
-};
+}

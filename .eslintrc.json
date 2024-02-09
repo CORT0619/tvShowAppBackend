@@ -26,7 +26,8 @@
         "old/",
         "*.config.js",
         "src/test/",
-        "logger.ts"
+        "logger.ts",
+        "src/routes/thetvdb-api.ts"
     ],
     "overrides": [
         {
