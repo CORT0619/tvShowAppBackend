@@ -1,6 +1,6 @@
 name: db-changes
 on:
-  pull_request:
+  push:
     branches:
       - master
 jobs:
