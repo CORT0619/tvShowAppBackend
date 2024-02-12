@@ -1,6 +1,12 @@
 import axios from 'axios';
 import * as showApi from './tvmazeapi';
-import { Episode, PopularShows, TvShow, TvShowResults } from '../models/tvshow';
+import {
+  Episode,
+  PopularShows,
+  Shows,
+  TvShow,
+  TvShowResults
+} from '../models/tvshow';
 import 'dotenv/config';
 import { AxiosError } from 'axios';
 
@@ -31,8 +37,8 @@ export async function searchTvShows(show: string): Promise<TvShow[]> {
           schedule,
           network,
           externals,
-          _embedded,
-        },
+          _embedded
+        }
       }) => ({
         id,
         name,
@@ -44,8 +50,8 @@ export async function searchTvShows(show: string): Promise<TvShow[]> {
         schedule,
         network,
         externals,
-        _embedded,
-      }),
+        _embedded
+      })
     );
   } catch (err) {
     let message = 'An error has occurred.';
@@ -76,8 +82,8 @@ export async function retrieveShowEpisodes(id: string): Promise<Episode[]> {
         season,
         number,
         airdate,
-        summary,
-      }),
+        summary
+      })
     );
   } catch (err) {
     let message = 'An error has occurred.';
@@ -106,7 +112,6 @@ export async function retrieveShowInformation(showId: string): Promise<TvShow> {
 
     return showObj;
   } catch (err) {
-    // console.log('err ', err.toJSON());
     let message = 'An error has occurred.';
     let status = 500;
     if (err instanceof AxiosError) {
@@ -117,9 +122,7 @@ export async function retrieveShowInformation(showId: string): Promise<TvShow> {
   }
 }
 
-export async function getPopularShows(): Promise<
-  { id; overview; name; image_path; vote_average; first_air_date }[]
-> {
+export async function getPopularShows(): Promise<Shows[]> {
   try {
     const url = showApi.retrievePopularShows(process.env.themoviedbApiKey);
     const response = (await axios.get<PopularShows>(url)).data;
@@ -131,15 +134,15 @@ export async function getPopularShows(): Promise<
         name,
         image_path: backdrop_path,
         vote_average,
-        first_air_date,
+        first_air_date
       }) => ({
         id,
         name,
         overview,
         image_path: `https://image.tmdb.org/t/p/w500/${backdrop_path}`,
         vote_average,
-        first_air_date,
-      }),
+        first_air_date
+      })
     );
   } catch (err) {
     let message = 'An error has occurred.';

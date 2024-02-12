@@ -1,7 +1,7 @@
 import request from 'supertest';
-import router from '../routes/routes';
+import router from '../routes';
 import * as showApi from '../tvshow/tvshowapi';
-import { Episode, PopularShows, ShowStatus, TvShow } from '../models/tvshow';
+import { Episode, Shows, ShowStatus, TvShow } from '../models/tvshow';
 import { AxiosError } from 'axios';
 
 const app = router;
@@ -60,7 +60,7 @@ describe('GET api/show/popular', () => {
           'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse hendrerit consequat nibh gravida mollis. Praesent semper urna purus, vitae iaculis turpis euismod eu. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
         image_path: 'https://picsum.photos/seed/picsum/200/300',
         vote_average: 7.6,
-        first_air_date: '2024-01-01',
+        first_air_date: '2024-01-01'
       },
       {
         id: 4567,
@@ -69,9 +69,9 @@ describe('GET api/show/popular', () => {
           'hasellus hendrerit elementum sagittis. Fusce sed suscipit lorem, sit amet sollicitudin urna. Curabitur massa ipsum, efficitur quis consequat ut, laoreet ac magna. Donec dictum viverra dolor eget sollicitudin.',
         image_path: 'https://picsum.photos/200/300?grayscale',
         vote_average: 7.6,
-        first_air_date: '2024-01-02',
-      },
-    ] as any as PopularShows[];
+        first_air_date: '2024-01-02'
+      }
+    ] as any as Shows[];
     const spy = jest
       .spyOn(showApi, 'getPopularShows')
       .mockResolvedValue(resArray);
@@ -98,7 +98,7 @@ describe('GET api/show/popular', () => {
       expect(spy).toHaveBeenCalled();
       expect(errResponse.status).toEqual(500);
       expect(errResponse.text).toStrictEqual(
-        'There was an error on the server.',
+        'There was an error on the server.'
       );
     } catch (err) {
       // console.log('error ', err);
@@ -111,7 +111,7 @@ describe('GET api/show/:showId', () => {
     const mockedResponse = {
       id: 12345,
       name: 'Cold Case',
-      status: ShowStatus.Running,
+      status: ShowStatus.Running
     } as any as TvShow;
 
     const spy = jest
@@ -132,7 +132,7 @@ describe('GET api/show/:showId', () => {
     const spy = jest
       .spyOn(showApi, 'retrieveShowInformation')
       .mockRejectedValue(
-        new AxiosError('There was some weird error on your end.', '404'),
+        new AxiosError('There was some weird error on your end.', '404')
       );
 
     try {
@@ -158,8 +158,8 @@ describe('GET api/show/series/:seriesId/episodes', () => {
         name: 'All Rise',
         url: 'https://www.tvmaze.com/episodes/1669455/all-rise-1x01-pilot',
         summary:
-          'Integer egestas pellentesque tellus ac commodo. Nulla ut ornare sem. In scelerisque mauris quis dui ultricies sagittis. Morbi faucibus suscipit iaculis. Curabitur at volutpat enim. In semper sapien sit amet mattis cursus. Vivamus a imperdiet mauris.',
-      },
+          'Integer egestas pellentesque tellus ac commodo. Nulla ut ornare sem. In scelerisque mauris quis dui ultricies sagittis. Morbi faucibus suscipit iaculis. Curabitur at volutpat enim. In semper sapien sit amet mattis cursus. Vivamus a imperdiet mauris.'
+      }
     ] as any as Episode[];
     const spy = jest
       .spyOn(showApi, 'retrieveShowEpisodes')
