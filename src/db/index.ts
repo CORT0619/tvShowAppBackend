@@ -12,11 +12,11 @@ export const registerUser = async (
   name: string,
   email: string,
   password: string,
-  hash: string,
+  salt: string,
   role?: Role
 ) => {
   try {
-    return await createUser(userId, name, email, password, hash, role);
+    return await createUser(userId, name, email, password, salt, role);
   } catch (error) {
     throw new Error(JSON.stringify(error));
   }
@@ -34,7 +34,7 @@ export const locateUser = async (
   email: string,
   opt?: {
     password?: boolean;
-    hash?: boolean;
+    salt?: boolean;
     role?: boolean;
     tvshow?: boolean;
     episodes?: boolean;

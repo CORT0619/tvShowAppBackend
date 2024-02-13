@@ -8,7 +8,7 @@ export const createUser = async (
   name: string,
   email: string,
   password: string,
-  hash: string,
+  salt: string,
   role?: Role
 ) => {
   try {
@@ -18,7 +18,7 @@ export const createUser = async (
         name,
         email,
         password,
-        hash,
+        salt,
         role
       }
     });
@@ -56,7 +56,7 @@ export const findUser = async (
   email: string,
   opt?: {
     password?: boolean;
-    hash?: boolean;
+    salt?: boolean;
     role?: boolean;
     tvshow?: boolean;
     episodes?: boolean;
@@ -64,7 +64,7 @@ export const findUser = async (
 ) => {
   const {
     password = false,
-    hash = false,
+    salt = false,
     role = false,
     tvshow = false,
     episodes = false
@@ -76,7 +76,7 @@ export const findUser = async (
       },
       select: {
         userId: true,
-        hash,
+        salt,
         password,
         role,
         tvshow,
