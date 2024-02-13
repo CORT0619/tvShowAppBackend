@@ -15,7 +15,6 @@ showRouter.get('/search', query('show').notEmpty(), (async (req, res, next) => {
 
   const show = req.query.show as string;
   const escapedShow = escape(show.trim());
-  console.log({ escapedShow });
 
   try {
     const results = await showApi.searchTvShows(escapedShow);
