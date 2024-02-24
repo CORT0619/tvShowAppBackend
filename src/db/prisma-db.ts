@@ -68,7 +68,7 @@ export const findUser = async (
     role = false,
     tvshow = false,
     episodes = false
-  } = opt;
+  } = opt || {};
   try {
     const user = await prisma.user.findUnique({
       where: {
