@@ -10,7 +10,7 @@ showRouter.get('/search', query('show').notEmpty(), (async (req, res, next) => {
   const validated = validationResult(req);
 
   if (validated.array().length) {
-    return res.send('Please supply the name of a tvshow.');
+    return res.json({ error: 'Please supply the name of a tvshow.' });
   }
 
   const show = req.query.show as string;
@@ -59,10 +59,5 @@ showRouter.get('/series/:seriesId/episodes', (async (req, res, next) => {
     next(err);
   }
 }) as RequestHandler);
-
-showRouter.all('*', (req, res /*, next*/) => {
-  res.status(404).send('route not found');
-});
-// TODO: add a catch all - not found route or add in error handler
 
 export default showRouter;
