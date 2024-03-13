@@ -16,7 +16,8 @@
 			"multer",
 			"node",
 			"express",
-			"uuid"
+			"uuid",
+			"supertest"
 		]
 	},
 	"include": [
