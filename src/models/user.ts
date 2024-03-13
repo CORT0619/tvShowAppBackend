@@ -8,3 +8,8 @@ export interface User extends Login {
 }
 
 export type Role = 'ADMIN' | 'USER';
+
+export interface tokenPayload {
+  userId: string;
+  role?;
+}

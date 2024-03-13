@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import 'dotenv/config';
 import { v4 as uuidv4 } from 'uuid';
 import { NextFunction, Request, Response } from 'express';
+import { tokenPayload } from '../models/user';
 
 export const signToken = (
   type: 'access' | 'refresh',
@@ -10,11 +11,14 @@ export const signToken = (
   expiry: string,
   role?: string
 ): string => {
+  // TODO: make sure env variables are set before using
+  const payload: tokenPayload = {
+    userId,
+    ...(role ? { role } : {})
+  };
+
   const token = jwt.sign(
-    {
-      role,
-      userId
-    },
+    payload,
     type === 'access'
       ? process.env.ACCESS_TOKEN_SECRET
       : type === 'refresh'
@@ -54,8 +58,22 @@ export const verifyPassword = async (
   return await bcrypt.compare(loginPassword, dbPassword);
 };
 
-export const verifyToken = (token: string): string | JwtPayload => {
-  return jwt.verify(token, process.env.JWT_SECRET, {
+export const verifyToken = (
+  // TODO: add error handling for this
+  token: string,
+  type: 'access' | 'refresh'
+): string | JwtPayload => {
+  let secret: string;
+  if (type === 'access') {
+    secret = process.env.ACCESS_TOKEN_SECRET;
+  } else if (type === 'refresh') {
+    secret = process.env.REFRESH_TOKEN_SECRET;
+  }
+
+  if (!secret) throw new Error('invalid secret.');
+
+  // TODO: make sure JWT_SECRET is set before using
+  return jwt.verify(token, secret, {
     algorithms: ['RS256']
   });
 };
@@ -71,10 +89,11 @@ export const validateToken = (
     return res.status(403).json({ error: 'invalid token.' });
 
   const token = (header as string).split(' ')[1];
-  const isValidToken = verifyToken(token);
+  const isValidToken = verifyToken(token, 'access');
 
   if (!isValidToken) return res.status(403).json({ error: 'invalid token.' });
   // TODO: get claims from token if needed
+  // TODO: add more validation to check claims are there
   next();
 };
 
