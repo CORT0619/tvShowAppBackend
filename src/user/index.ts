@@ -2,15 +2,25 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import 'dotenv/config';
 import { v4 as uuidv4 } from 'uuid';
+import { NextFunction, Request, Response } from 'express';
 
-export const signToken = (role: string, userId: string): string => {
+export const signToken = (
+  type: 'access' | 'refresh',
+  userId: string,
+  expiry: string,
+  role?: string
+): string => {
   const token = jwt.sign(
     {
       role,
       userId
     },
-    process.env.JWT_SECRET,
-    { expiresIn: '10m', algorithm: 'RS256' }
+    type === 'access'
+      ? process.env.ACCESS_TOKEN_SECRET
+      : type === 'refresh'
+        ? process.env.REFRESH_TOKEN_SECRET
+        : '',
+    { expiresIn: expiry, algorithm: 'RS256' }
   );
 
   if (!token) throw new Error('An error occurred signing the token');
@@ -48,6 +58,24 @@ export const verifyToken = (token: string): string | JwtPayload => {
   return jwt.verify(token, process.env.JWT_SECRET, {
     algorithms: ['RS256']
   });
+};
+
+export const validateToken = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const header = req.headers['Authorization'];
+
+  if (typeof header === 'undefined' || header === '')
+    return res.status(403).json({ error: 'invalid token.' });
+
+  const token = (header as string).split(' ')[1];
+  const isValidToken = verifyToken(token);
+
+  if (!isValidToken) return res.status(403).json({ error: 'invalid token.' });
+  // TODO: get claims from token if needed
+  next();
 };
 
 // send jwt to client
