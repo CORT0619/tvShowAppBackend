@@ -3,7 +3,7 @@ import express, { RequestHandler } from 'express';
 import { body } from 'express-validator';
 import 'dotenv/config';
 import * as user from '../user';
-import { /*Login,*/ User } from '../models/user';
+import { Login, User } from '../models/user';
 import * as db from '../db';
 import { ErrorWithStatusCode } from '../models/errorwithstatuscode';
 
@@ -66,50 +66,66 @@ userRouter.post(
 });*/
 
 /* Login */
-// userRouter.post(
-// TODO: work in refresh token
-//   '/login',
-//   body('email').isEmail().notEmpty().trim().escape(),
-//   body('password').notEmpty().isString(),
-//   (async (req, res, next) => {
-//     const { email, password } = req.body as Login;
+userRouter.post(
+  '/login',
+  body('email').isEmail().notEmpty().trim().escape(),
+  body('password').notEmpty().isString(),
+  (async (req, res, next) => {
+    const { email, password } = req.body as Login;
 
-//     try {
-//       const userFound = await db.locateUser(email, {
-//         password: true,
-//         role: true
-//       });
+    try {
+      const userFound = await db.locateUser(email, {
+        password: true,
+        role: true
+      });
 
-//       console.log({ userFound });
-//       if (userFound && Object.keys(userFound).length > 0) {
-//         const dbPassword = userFound.password;
+      if (userFound && Object.keys(userFound).length > 0) {
+        const dbPassword = userFound.password;
 
-//         // compare passwords
-//         const isValidPassword = await user.verifyPassword(password, dbPassword);
+        // compare passwords
+        const isValidPassword = await user.verifyPassword(password, dbPassword);
 
-//         if (!isValidPassword) {
-//           return res
-//             .status(404)
-//             .json({ error: 'Incorrect username or password.' }); // TODO: make error message more specific?
-//         }
-//         // TODO: need to look into refresh token
-//         const token = user.signToken(userFound.role, userFound.userId);
-//         return res
-//           .cookie('access_token', `Bearer ${token}`, {
-//             httpOnly: true,
-//             expires: new Date(/* 10 minutes*/)
-//           }) // TODO: set expiry to 10 mins
-//           .status(201)
-//           .json({ message: 'login successful!' });
-//       }
-//       return res
-//         .status(404)
-//         .json({ message: 'Incorrect username or password.' }); // TODO: make error message more specific?
-//     } catch (err) {
-//       next(err);
-//     }
-//   }) as RequestHandler
-// );
+        if (!isValidPassword) {
+          return res
+            .status(404)
+            .json({ error: 'Incorrect username or password.' });
+        }
+
+        const accessToken = user.signToken(
+          'access',
+          userFound.userId,
+          '10m',
+          userFound.role
+        );
+
+        const refreshToken = user.signToken('refresh', userFound.userId, '1d');
+
+        return res
+          .cookie('refresh_token', refreshToken, {
+            httpOnly: true,
+            sameSite: 'strict',
+            maxAge: 24 * 60 * 60 * 1000
+          })
+          .status(201)
+          .json({ accessToken, message: 'login successful!' });
+      }
+      return res
+        .status(404)
+        .json({ message: 'Incorrect username or password.' });
+    } catch (err) {
+      next(err);
+    }
+  }) as RequestHandler
+);
+
+/* Retrieve Refresh Token */
+// userRouter.post('/refresh', (async (req, res, next) => {}) as RequestHandler);
+
+/* Add TvShow to User */
+
+/* Update Episode Status */
+
+/* Update User Profile */
 
 /* Logout */
 // userRouter.post('/logout', async (req, res, next) => {});
