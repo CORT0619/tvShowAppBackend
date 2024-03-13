@@ -8,4 +8,8 @@ lib/key.json
 # old firebase files
 old/
 
+# logging
 logs/
+
+# testing
+coverage/
